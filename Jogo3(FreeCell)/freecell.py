@@ -86,21 +86,74 @@ def verify(valor, cordenadas):
 
 def coloca_no_deck(indice,card):
     global lista_decks, lista_coordenadas
-    carta_nova = card.split("_")
     
-    if len(lista_decks[indice]) > 0:
-        carta_topo =  lista_decks[indice].peek().split("_")
-        verificacao_cartas = verifica_cartas(carta_nova,carta_topo)
+    carta_nova = card.split("_")
+
+    if indice <= 11:
+        if len(lista_decks[indice]) > 0:
+            carta_topo =  lista_decks[indice].peek().split("_")
+            verificacao_cartas = verifica_cartas(carta_nova,carta_topo)
+        else:
+            verificacao_cartas = True
+        if len(lista_decks[indice]) < 13 and verificacao_cartas:
+            if indice <= 7:
+                lista_coordenadas[indice][1] += 32
+                lista_decks[indice].push(card)
+                return True
+            else:
+                if len(lista_decks[indice]) == 0:
+                    lista_decks[indice].push(card)
+                    return True               
+            
+        return False
     else:
-        verificacao_cartas = True
-    if len(lista_decks[indice]) < 13 and verificacao_cartas:
-        lista_decks[indice].push(card)
-        if indice <= 7:
-            lista_coordenadas[indice][1] += 32
-        return True
+        return coloca_fundacao(indice,card,carta_nova)
 
+
+
+
+def coloca_fundacao(indice,card,carta_nova):
+    if indice == 12:
+        if len(fundacao_copas) == 0:
+            if (card == "ace_hearts"):
+                fundacao_copas.push(card)
+                return True
+        elif fundacao_copas.peek()  != "king":
+            if verifica_carta_fundacao(carta_nova,fundacao_copas.peek().split("_")):
+                fundacao_copas.push(card)
+                return True  
+
+    if indice == 13:
+        if len(fundacao_espada) == 0:
+            if (card == "ace_spades"):
+                fundacao_espada.push(card)
+                return True      
+        elif fundacao_espada.peek()  != "king":
+            if verifica_carta_fundacao(carta_nova,fundacao_espada.peek().split("_")):
+                fundacao_espada.push(card)
+                return True  
+
+    if indice == 14:
+        if len(fundacao_ouros) == 0:
+            if (card == "ace_diamonds"):
+                fundacao_ouros.push(card)
+                return True
+
+        elif fundacao_ouros.peek()  != "king":
+            if verifica_carta_fundacao(carta_nova,fundacao_ouros.peek().split("_")):
+                fundacao_ouros.push(card)
+                return True  
+    
+    if indice == 15:
+        if len(fundacao_paus) == 0:
+            if (card == "ace_clubs"):
+                fundacao_paus.push(card)
+                return True        
+        elif fundacao_paus.peek()  != "king":
+            if verifica_carta_fundacao(carta_nova,fundacao_paus.peek().split("_")):
+                fundacao_paus.push(card)
+                return True  
     return False
-
 
 
 def verifica_cartas(new_card,card_topo):
@@ -184,26 +237,14 @@ def modifica_deck(deck_escolhido,cordenadas,card):
     else:
         lista_decks[indice].push(card)
 
+
 clock = pygame.time.Clock()
 
-
-def game_loop():
-    global lista_cartas, lista_coordenadas, lista_decks
-    running = True
-
-    cartax = int(1000/2)
-    cartay = int(600/2)
-    held = False
-    controle = False
-    qualquer = False
-
-    empilha_decks(lista_cartas,lista_contador)
-
-    deck_escolhido = 0
-    
-    while running:
-        cordenadas = pygame.mouse.get_pos()  
-        tela.fill((36,150,84))
+def desenhos_em_jogo():
+        #Preenche o Fundo
+        tela.fill((36,150,84)) 
+        
+        #Desenho das bordas
         pygame.draw.rect(tela, (12,94,51), (0,50,1000,120))
         pygame.draw.rect(tela, (51,51,51), (0,0,1000,50))
         pygame.draw.rect(tela, (255,255,255), (0,50,1000,2))
@@ -219,13 +260,35 @@ def game_loop():
         pygame.draw.rect(tela,(0,0,0),[595,65,71,96],5)
         pygame.draw.rect(tela,(0,0,0),[690,65,71,96],5)
         pygame.draw.rect(tela,(0,0,0),[785,65,71,96],5)
-        pygame.draw.rect(tela,(0,0,0),[880,65,71,96],5) 
-        
+        pygame.draw.rect(tela,(0,0,0),[880,65,71,96],5)
+
+         
+        #Desenha os simbolos nas fundações
         tela.blit(copas, (618,103))
         tela.blit(espadas, (715,103))
         tela.blit(ouros, (809,100))
         tela.blit(paus, (902,100))
 
+def game_loop():
+    global lista_cartas, lista_coordenadas, lista_decks, clock
+    running = True
+
+    cartax = int(1000/2)
+    cartay = int(600/2)
+    held = False
+    controle = False
+    qualquer = False
+
+    empilha_decks(lista_cartas,lista_contador)
+
+    deck_escolhido = 0
+
+    
+    while running:
+        cordenadas = pygame.mouse.get_pos()  
+        
+        desenhos_em_jogo()
+        
         for event in pygame.event.get():
 
             if event.type == pygame.QUIT:
