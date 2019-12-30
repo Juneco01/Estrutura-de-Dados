@@ -189,7 +189,7 @@ def pega_do_csv():
     f = open('tabela_tempo.csv', 'r')
     lista = []
     try:
-        leitor = csv.reader(f)
+        leitor = csv.reader(f,lineterminator='\n')
         for linha in leitor:
             lista.append(linha)
     finally:
