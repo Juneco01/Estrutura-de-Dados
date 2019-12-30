@@ -5,7 +5,7 @@ from stack import Stack
 from cards import card_dicionario, lista_cartas
 from tkinter import *
 
-
+#Inicia os modulos do pygame
 pygame.init()
 
 
@@ -16,30 +16,35 @@ ouros = pygame.image.load("ouros.png")
 paus = pygame.image.load("paus.png")
 
 
+
+#Cores
 BLACK = (14,17,17)
 GREEN_TABLE = (36,150,84)
 WHITE = (255,255,255)
 RED = (158,11,15)
+WHITE_b = (224,210,200)
 
 
+#Dimensoes da tela principal
 LARGURA = 1000
 ALTURA = 700
 
+#Janela do jogo
 tela = pygame.display.set_mode((LARGURA,ALTURA))
+
+#Titulo do jogo
 pygame.display.set_caption("Freecell Game")
 
 
+#Fontes que serão usadas nos textos do jogo
 fonte_media = pygame.font.Font("CloisterBlack.ttf",25)
 fonte_pequena = pygame.font.Font("AachenBoldBT.ttf",25)
 fonte_grande = pygame.font.Font("CloisterBlack.ttf",140)
 
-LARGURA = 1000
-ALTURA = 700
 
 clock = pygame.time.Clock()
 
-
-
+#Função do menu principal
 def game_menu(tela):
     
     menu = True
@@ -96,14 +101,14 @@ def botao(texto,x,y,largura,altura,cor_inativa,cor_ativa,tela,acao = None):
                 pygame.quit()
                 quit()
             if acao == "objetivos":
-                pass
+                instrucoes_loop()
             if acao == "play":
                 game_loop()
             if acao == "Main":
                 game_menu(tela)
             if acao == "tkinter-sim":
                 return True
-            if acao == "tkinternao":
+            if acao == "tkinter-nao":
                 return True
             if acao == "tempos":
                 tempos_loop()
@@ -143,7 +148,7 @@ def score(lista_decks):
     return pontuacao
 
 
-#Exibe o tempo de jogo durante o laço principal
+#Formata e exibe o tempo de jogo durante o laço principal
 def timer(passed_time,tempo_minuto):
     if passed_time >= 10 and tempo_minuto < 10:
         tempo_formatado = "0"+str(tempo_minuto)+":"+str(passed_time)
@@ -163,7 +168,7 @@ def timer(passed_time,tempo_minuto):
 
 
 # Parte que lida com arquivo de texto e o GUI que recebe o nome do player #
-def cancel_onclick():
+def cancel_onclick(janela):
     janela.destroy()
 
 
@@ -218,7 +223,8 @@ def game_win_loop(tempo):
     entrada = Entry(janela, width = 20)
     entrada.place(x=72,y=60)
 
-    botao1 = Button(janela, width = 8, text ="Cancelar", background ="#259654", command = cancel_onclick)
+    botao1 = Button(janela, width = 8, text ="Cancelar", background ="#259654")
+    botao1["command"] = partial(cancel_onclick,janela)
     botao1.place(x=72, y=100)
 
 
@@ -226,8 +232,6 @@ def game_win_loop(tempo):
     botao2["command"] = partial(ir_onclick,tempo,entrada,janela)
 
     botao2.place(x=180, y= 100)
-    
-    
     
     running = True
 
@@ -239,7 +243,6 @@ def game_win_loop(tempo):
                 pygame.quit()
                 sys.exit()   
             
-
         
         pygame.draw.rect(tela,(12,94,51),(240,212,540,300))
         pygame.draw.rect(tela,WHITE,[240,210,540,300],3)
@@ -266,9 +269,9 @@ def game_win_loop(tempo):
             running = False
             tempos_loop()
         
-        elif gui_cancelar == False:
+        elif gui_cancelar == True:
             running = False
-            game_menu()
+            game_menu(tela)
 
 
 
@@ -294,7 +297,7 @@ def tempos_loop():
         tela.blit(texto2, [280,230])
 
         altura = 260 
-        for i in lista_nomes:
+        for i in lista_nomes[-7:]:
             texto_nome = fonte_media.render(i[0], True, (255,255,255))
             tela.blit(texto_nome, [280,altura])
             texto_tempo = fonte_media.render(i[1], True, (255,255,255))
@@ -314,6 +317,10 @@ def tempos_loop():
         pygame.display.update()
 
 
+
+#              Parte que controla o jogo em si                 #
+
+#Cada deck de cartas é uma pilha, no total são 8 Decks(pilhas).
 
 #É chamado sempre no começo de cada loop principal
 #Empilha todos os decks a partir de uma lista ordenada aleatoriamente
@@ -423,7 +430,7 @@ def coloca_fundacao(indice,card,carta_nova, lista_decks):
     return False
 
 #verifica se a carta do topo do deck, e a carta que o player estiver tentando inserir
-#estão em ordem decrescente, caso sim, retorna True.
+#estão em ordem decrescente
 def verifica_cartas(new_card,card_topo):
     if "hearts" in new_card or "diamonds" in new_card:
         if "spades" in card_topo or "clubs" in card_topo:
@@ -477,8 +484,7 @@ def verifica_carta_fundacao(new_card,card_topo):
     
 
 
-#se as duas carta estiverem em ordem crescente (topo < carta em movimento)
-#A função retorna true.
+#verifica se as duas cartas  estiverem em ordem crescente (topo da fundacao < carta em movimento)
 def ordem_fundacao(carta_do_topo, carta_nova):
     if "ace" == carta_do_topo and carta_nova == "2":
         return True
@@ -515,6 +521,35 @@ def modifica_deck(deck_escolhido,cordenadas,card, lista_decks, lista_coordenadas
 
 
 clock = pygame.time.Clock()
+
+
+
+def instrucoes_loop():
+
+    while True:
+        tela.fill((36,150,84))
+        
+        mensagem("Regras",BLACK,tela,deslocamento_y= -250, tamanho="grande")
+
+        mensagem("O Objetivo é movimentar todas as cartas para as fundações.",RED,tela,deslocamento_y= -120, tamanho="pequeno")
+        mensagem("As fundações devem ser organizadas em ordem crescente.",BLACK,tela,deslocamento_y= -80, tamanho="pequeno")  
+        mensagem("A carta, uma vez colocada na fundação não pode ser reutilizada.",RED,tela,deslocamento_y= -40, tamanho="pequeno")
+        mensagem("As celulas vazias aceitam qualquer carta, porém só permitem uma.",BLACK,tela,deslocamento_y= 0, tamanho="pequeno")
+        mensagem("As celulas vazias devem ser usadas para movimentações temporárias.",RED,tela,deslocamento_y= 40, tamanho="pequeno")
+        mensagem("Somente as cartas do topo de cada pilha podem ser movimentadas.",BLACK,tela,deslocamento_y= 80, tamanho="pequeno")
+        mensagem("As pilhas devem ser organizadas em ordem decrescente e cores alternadas.",RED,tela,deslocamento_y= 120, tamanho="pequeno")
+        mensagem("A tabela de tempo exibirá apenas as ultimas 7 marcações salvas.",BLACK,tela,deslocamento_y= 160, tamanho="pequeno")
+    
+        botao("Menu Principal", 770, 600, 170, 40, RED, BLACK, tela, acao="Main")
+        
+        for event in pygame.event.get():
+            
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                sys.exit()
+
+        pygame.display.update()
+
 
 
 #Funcao que desenha os elementos do jogo
@@ -555,7 +590,6 @@ def desenhos_em_jogo():
         tela.blit(espadas, (715,103))
         tela.blit(ouros, (809,100))
         tela.blit(paus, (902,100))
-
 
 
 
@@ -614,7 +648,8 @@ def game_loop():
     #Variaveis para controle de ações com o mouse
     held = False
     controle = False
-    qualquer = False
+    qualquer_deck = False
+    clicou_numa_carta = False
 
     #Empilha as cartas em cada deck
     empilha_decks(lista_cartas,lista_contador,lista_decks)
@@ -657,25 +692,30 @@ def game_loop():
         
         
         
-        
-        botao("Voltar", 870, 3, 120, 40, GREEN_TABLE, (12,94,51), tela, acao="Main")
+        if not clicou_numa_carta:
+            botao("Voltar", 870, 3, 120, 40, GREEN_TABLE, (12,94,51), tela, acao="Main")
+        else:
+            botao("Voltar", 870, 3, 120, 40, GREEN_TABLE, (12,94,51), tela, acao="nada")
         
         #Detecta os eventos do jogo
         for event in pygame.event.get():
 
             if event.type == pygame.QUIT:
                 running = False
-
-            if event.type == pygame.MOUSEBUTTONDOWN:
+            
+            #Caso ocorra o click, seta as variaveis de controle
+            if event.type == pygame.MOUSEBUTTONDOWN:                
                 held = True
                 controle = True
-                
+            
+            #Caso o usuario solte o click  
             if event.type == pygame.MOUSEBUTTONUP:
-                if qualquer:
+                if clicou_numa_carta:
                     modifica_deck(deck_escolhido,cordenadas,card,lista_decks, lista_coordenadas)                              
-                    qualquer = False 
                 pygame.mouse.set_visible(True)
                 held = False
+                clicou_numa_carta = False
+                
 
         #Verifica se houve o click no mouse
         #Logo depois, verifica se o click foi em alguma carta do topo de algum deck
@@ -687,18 +727,18 @@ def game_loop():
                     if cordenadas[1] >= lista_coordenadas[indice][1] and cordenadas[1] <= lista_coordenadas[indice][1] + 45:
                         if len(lista_decks[indice]) > 0:
                             card = lista_decks[indice].pop()
-                            deck_escolhido = indice + 1
-                            qualquer = True
+                            deck_escolhido = indice + 1                           
                             controle = False
+                            clicou_numa_carta = True
             
             for indice in range(8, len(lista_coordenadas)- 4):            
                 if cordenadas[0] >= lista_coordenadas[indice][0] and cordenadas[0] <= lista_coordenadas[indice][0] + 71:
                     if cordenadas[1] >= lista_coordenadas[indice][1] and cordenadas[1] <= lista_coordenadas[indice][1] + 95:
                         if len(lista_decks[indice]) > 0:
                             card = lista_decks[indice].pop()
-                            deck_escolhido = indice + 1
-                            qualquer = True
+                            deck_escolhido = indice + 1                           
                             controle = False
+                            clicou_numa_carta = True
         
         
         #percorre a pilha (serve apenas para desenhar todas as cartas dos decks na tela)
@@ -715,7 +755,7 @@ def game_loop():
         
         
         #Verifica se há alguma carta em movimento, caso sim, desenha as coordenadas dela, a partir das do mouse
-        if qualquer == True:
+        if clicou_numa_carta == True:
             pygame.mouse.set_visible(False)
             cartax = cordenadas[0] - (card_dicionario[card].get_width()//2)
             cartay = cordenadas[1] - (card_dicionario[card].get_height()//2)
