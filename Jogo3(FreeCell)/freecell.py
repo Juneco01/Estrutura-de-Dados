@@ -175,7 +175,7 @@ def cancel_onclick(janela):
 def arquivo_csv(nome, tempo):
     f = open('tabela_tempo.csv', 'a')
     try: 
-        writer = csv.writer(f)
+        writer = csv.writer(f,lineterminator='\n')
         writer.writerow((nome,tempo))
     finally:
         f.close()
@@ -189,7 +189,7 @@ def pega_do_csv():
     f = open('tabela_tempo.csv', 'r')
     lista = []
     try:
-        leitor = csv.reader(f,lineterminator='\n')
+        leitor = csv.reader(f)
         for linha in leitor:
             lista.append(linha)
     finally:
