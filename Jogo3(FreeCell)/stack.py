@@ -50,9 +50,9 @@ class Stack:
                 self.aux = None
                 self.first = None
             
-            self.tamanho -= 1      #Tamanho decrementa em 1
+            self.tamanho -= 1     
             
-            return node.dado   #Retorna o elemento retirado
+            return node.dado  
         
         raise IndexError("A pilha está vazia")  #Caso a pilha esteja vazia, a mensagem aparecerá no terminal
     #obs: Possiveis underflows já são tratados dentro do codigo do jogo

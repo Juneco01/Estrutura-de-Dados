@@ -4,7 +4,7 @@ pygame.display.set_mode((1000,600))
 card_dicionario = {}
     
 #Aqui estão todas as imagens utilizadas no jogo, as instancias são armazenadas em um dicionario
-#As chaves também são declaradas numa lista.
+#As chaves também são armazenadas em uma lista.
 
 img = pygame.image.load("playing_cards/ace_clubs.png").convert()
 card_dicionario["ace_clubs"] = img

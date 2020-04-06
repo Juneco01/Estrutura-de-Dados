@@ -78,7 +78,7 @@ def game_menu(tela):
         tela.blit(card_dicionario["king_clubs"], [770,530])
         tela.blit(card_dicionario["queen_diamonds"], [880,530])
 
-        mensagem("© uespi.com, 2019 Developed by @juneco_r/Gabriel Marinho", BLACK,tela, deslocamento_y= 330 , tamanho = "medio")
+        mensagem("© uespi.com, 2019 Developed by @juneco_r", BLACK,tela, deslocamento_y= 330 , tamanho = "medio")
         
   
         pygame.display.update()
@@ -466,7 +466,6 @@ def verifica_cartas(new_card,card_topo):
 
 
 #Verifica a carta em movimento e a carta do topo da fundação
-#Caso o naipe seja o mesmo da fundação, verifica os valores.
 def verifica_carta_fundacao(new_card,card_topo):
     if "hearts" in new_card and "hearts" in card_topo:
         if ordem_fundacao(card_topo[0], new_card[0]):
